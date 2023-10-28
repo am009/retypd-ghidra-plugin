@@ -28,17 +28,23 @@ repository with:
 docker build -t retypd-image --target interactive -f ./.ci/Dockerfile .
 ```
 
-and run with:
+and run with (SSH X11 Forwarding):
 
 ```bash
 xhost +si:localuser:root
 docker run -it --privileged \
     --network=host \
     -e DISPLAY \
-    -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+    --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
+    --name retypd
     retypd-image \
     bash
 ```
+You can run ghidra by executing `./third-party/ghidra/ghidraRun`, and find the script under `@category Functions` in the Script Manager.
+
+The built plugin is at `/ghidra_retypd/GhidraRetypd.zip`, unzip it to the `$(GHIDRA_INSTALL_DIR)/Ghidra/Extensions/` to install.
+
+It seems extremely slow to run the plugin on `/bin/ls`.
 
 ## Manual Install
 

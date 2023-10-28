@@ -1,19 +1,13 @@
 FROM ubuntu:20.04 as base
 
-# Install pip3 to get access to apt-select
-RUN apt-get -y update \
-    && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        python3-pip
-
-# Install apt-select so rest of installation is fast
-RUN pip3 install apt-select && \
-    apt-select -C us -m one-day-behind && \
-    mv /etc/apt/sources.list /etc/apt/sources.list.backup && \
-    mv sources.list /etc/apt/
+ARG UBUNTU_MIRROR=mirrors.ustc.edu.cn
 
 # install required build/test tools
-RUN apt-get -y update \
+RUN if [[ ! -z "$UBUNTU_MIRROR" ]] ; then sed -i "s/archive.ubuntu.com/$UBUNTU_MIRROR/g" /etc/apt/sources.list \
+ && sed -i "s/security.ubuntu.com/$UBUNTU_MIRROR/g" /etc/apt/sources.list ; fi ; \
+ apt-get -y update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install \
+        python3-pip \
         build-essential \
         cmake \
         curl \
